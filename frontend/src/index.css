@@ -1,0 +1,33 @@
+/* frontend/src/index.css */
+
+/* Tailwind base layer */
+@tailwind base;
+
+/* Tailwind component layer */
+@tailwind components;
+
+/* Tailwind utility layer */
+@tailwind utilities;
+
+/* Optional: custom global styles */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc; /* soft gray background */
+  color: #111827; /* slate-900 text color */
+  margin: 0;
+  padding: 0;
+}
+
+/* Optional: Styling for form elements or buttons */
+input[type="file"],
+input[type="text"],
+textarea,
+button {
+  outline: none;
+  border-radius: 0.375rem; /* rounded-md */
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease-in-out;
+}

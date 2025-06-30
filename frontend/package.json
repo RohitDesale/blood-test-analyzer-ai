@@ -1,0 +1,123 @@
+// File: frontend/package.json
+{
+  "name": "blood-analyser-ui",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1",
+    "tailwindcss": "^3.4.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  }
+}
+
+// File: frontend/tailwind.config.js
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+
+// File: frontend/public/index.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blood Report Analyser</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+
+// File: frontend/src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// File: frontend/src/index.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// File: frontend/src/App.jsx
+import React, { useState } from 'react';
+import axios from 'axios';
+
+function App() {
+  const [file, setFile] = useState(null);
+  const [query, setQuery] = useState('Summarise my Blood Test Report');
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async () => {
+    if (!file) return alert('Please upload a PDF blood test report');
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('query', query);
+
+    try {
+      const res = await axios.post('http://localhost:8000/analyze', formData);
+      setResponse(res.data);
+    } catch (err) {
+      setResponse({ error: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6">
+        <h1 className="text-2xl font-bold text-center mb-4">Blood Report Analyser</h1>
+        <input type="file" accept=".pdf" onChange={handleFileChange} className="mb-4" />
+        <textarea
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Enter your health query"
+          className="w-full p-2 border rounded mb-4"
+        />
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          disabled={loading}
+        >
+          {loading ? 'Analyzing...' : 'Submit'}
+        </button>
+
+        {response && (
+          <div className="mt-6 bg-gray-50 border p-4 rounded">
+            <h3 className="font-semibold">Response:</h3>
+            <pre className="text-sm whitespace-pre-wrap">{JSON.stringify(response, null, 2)}</pre>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default App;
